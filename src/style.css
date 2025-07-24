@@ -8,6 +8,9 @@
     --hover-color: #43a047; /* Slightly darker green for hover */
     --footer-bg-color: #2c3e50; /* Dark navy for footer */
     --footer-text-color: #fff; /* White for footer text */
+    --error-font-color: #ff0000;
+    --error-input-border-color: #ff0000;
+    --error-input-background-color: #ffdddd;
 }
 
 html, body {
@@ -66,6 +69,19 @@ h1 {
     /*background-color: white;*/
     transition: background-color 0.3s ease, border 0.3s ease;
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+#puzzle input.input-error {
+    color: var(--error-font-color);
+    background-color: var(--error-input-background-color);
+    outline: none;
+    border: none;
+
+    &:focus {
+        background-color: var(--error-input-background-color);
+        outline: none;
+        border: none;
+    }
 }
 
 /* Remove spinner arrows in number inputs */
@@ -147,6 +163,73 @@ input.flash {
 }
 
 /* Buttons */
+/* Buttons Group Styling */
+.btn-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.btn-group button {
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 6px;
+    border: none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+/* Start Game Button */
+#start-game {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.2);
+}
+
+#start-game:hover {
+    background-color: var(--hover-color);
+    box-shadow: 0 6px 12px rgba(67, 160, 71, 0.4);
+}
+
+/* Restart Game Button */
+#restart-game {
+    color: var(--error-font-color);
+    box-shadow: 0 4px 8px rgba(255, 0, 0, 0.2);
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+    &:disabled:hover {
+        color: var(--error-font-color);
+        background-color: transparent;
+        box-shadow: none;
+    }
+}
+
+#restart-game:hover {
+    background-color: rgba(255, 0, 0, 0.8);
+    color: white;
+    box-shadow: 0 6px 12px rgba(255, 0, 0, 0.4);
+}
+
+/* Responsive Styling */
+@media (max-width: 500px) {
+    .btn-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .btn-group button {
+        width: 100%;
+        padding: 10px;
+        font-size: 1rem;
+    }
+}
+
+
 button, .btn-primary {
     padding: 12px 20px;
     font-size: 1.2rem;
@@ -157,6 +240,29 @@ button, .btn-primary {
     color: white;
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
+}
+
+button, .btn-secondary {
+    padding: 12px 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    background: var(--border-color);
+    color: white;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+ .btn-danger {
+    outline: solid 1px var(--error-input-border-color);
+    color: var(--error-font-color);
+    background: transparent;
+
+    &:hover {
+        opacity: 0.8;
+        background: transparent;
+    }
 }
 
 button:hover, .btn-primary:hover {
