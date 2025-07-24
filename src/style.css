@@ -1,0 +1,251 @@
+:root {
+    --font-default: 'Inter', sans-serif;
+    --font-code: 'JetBrains Mono', monospace;
+    --primary-color: #4caf50; /* Green for interactive elements */
+    --secondary-color: #f4f5f7; /* Light background for layouts */
+    --text-color: #333; /* Dark gray for text */
+    --border-color: #ccc; /* Light gray for borders */
+    --hover-color: #43a047; /* Slightly darker green for hover */
+    --footer-bg-color: #2c3e50; /* Dark navy for footer */
+    --footer-text-color: #fff; /* White for footer text */
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+/* Body and Global Styling */
+body {
+    font-family: var(--font-default);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    /*height: 100vh;*/
+    /*overflow: hidden;*/
+    background-color: #f4f5f7;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+main {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+/* Heading Styling */
+h1 {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+/* Main puzzle grid container */
+#puzzle {
+    width: 450px;
+    margin: 40px auto;
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 0;
+    animation: fadeIn 0.6s ease-in;
+}
+
+/* Puzzle input cells */
+#puzzle input {
+    width: 100%;
+    height: 50px;
+    box-sizing: border-box;
+    border: 1px solid var(--border-color);
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--text-color);
+    outline: none;
+    /*background-color: white;*/
+    transition: background-color 0.3s ease, border 0.3s ease;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Remove spinner arrows in number inputs */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* Thicker vertical borders for 3x3 grid columns */
+#puzzle input:nth-child(3n+1) {
+    border-left: 2px solid #000;
+}
+
+#puzzle input:nth-child(9n) {
+    border-right: 2px solid #000;
+}
+
+/* Thicker horizontal borders for 3x3 grid rows */
+#puzzle input:nth-child(n+1):nth-child(-n+9),
+#puzzle input:nth-child(n+28):nth-child(-n+36),
+#puzzle input:nth-child(n+55):nth-child(-n+63) {
+    border-top: 2px solid #000;
+}
+
+#puzzle input:nth-child(n+73):nth-child(-n+81) {
+    border-bottom: 2px solid #000;
+}
+
+/* Empty cell appearance (value 0) */
+.empty-cell {
+    background-color: var(--secondary-color);
+    color: transparent;
+    border: 1px dashed var(--border-color);
+}
+
+/* Gray background for fixed/pre-filled cells */
+.gray-fields {
+    background-color: rgba(76, 175, 80, 0.2);
+    font-weight: bold;
+    color: var(--text-color);
+    cursor: not-allowed;
+}
+
+/* Input cell focused */
+#puzzle input:focus {
+    border: 2px solid var(--primary-color);
+    background-color: rgba(76, 175, 80, 0.2);
+}
+
+/* Input flash animation on change */
+input.flash {
+    animation: flashCell 0.4s ease-in-out;
+}
+
+@keyframes flashCell {
+    0% {
+        background-color: var(--primary-color);
+    }
+    100% {
+        background-color: inherit;
+    }
+}
+
+/* Subtle fade-in when board loads */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Buttons */
+button, .btn-primary {
+    padding: 12px 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    background: var(--primary-color);
+    color: white;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+button:hover, .btn-primary:hover {
+    background: var(--hover-color);
+    box-shadow: 0 4px 12px rgba(67, 160, 71, 0.4);
+}
+
+.user-input {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 300px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input[type="text"], select {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    outline: none;
+}
+
+input[type="text"]:focus, select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+select {
+    appearance: none; /* Remove default styles */
+    background: #fff url('data:image/png;base64,...') no-repeat right 10px center;
+    background-size: 12px;
+}
+
+.footer {
+    background-color: var(--footer-bg-color);
+    color: var(--footer-text-color);
+    text-align: center;
+    padding: 20px 10px;
+    font-size: 14px;
+    width: 100%;
+}
+
+.footer .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer p {
+    margin: 5px 0;
+}
+
+.footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+
+.footer a:hover {
+    color: var(--hover-color);
+}
+
+.github-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: url('https://cdn-icons-png.flaticon.com/512/25/25231.png') no-repeat center;
+    background-size: contain;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+/* Responsive adjustments */
+@media (max-width: 500px) {
+    #puzzle {
+        width: 300px;
+    }
+
+    #puzzle input {
+        height: 36px;
+        font-size: 1.2rem;
+    }
+}
