@@ -118,7 +118,6 @@ const setDifficulty = function (difficulty) {
 }
 
 const inputFillOut = (isSolvable, solution) => {
-    const inputList = document.querySelectorAll('input')
     if (isSolvable && solution) {
         for (let i = 0; i < 9; i++) {
             for (let j = 0; j < 9; j++) {
