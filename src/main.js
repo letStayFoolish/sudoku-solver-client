@@ -252,7 +252,7 @@ const solve = async () => {
     const bodyRequest = {sudokuCombination: submission}
     if (!isValid || !bodyRequest) return;
 
-    await fetch('http://localhost:5154/api/sudoku/solved', {
+    await fetch('http://localhost:5154/api/sudoku/solve', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
