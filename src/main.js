@@ -11,17 +11,25 @@ const difficultySelect = document.getElementById("difficulty");
 
 // constants
 const PUZZLE_FIELDS_COUNT = 81 // 9 x 9
-const DEFAULT_DIFFICULTY = 'Hard';
-let isGameStarted = false;
-let isPuzzleSolved = false;
 let submission;
 let currentPuzzle;
 let isValid = true;
+const GAME_MODES = {
+    NEW: "NEW",
+    START: 'START',
+    SOLVE: 'SOLVE',
+    RESTART: 'RESTART'
+};
+
+const GAME_DIFFICULTIES = {
+    EASY: 'EASY',
+    MEDIUM: 'MEDIUM',
+    HARD: 'HARD',
+    EXTREME: "EXTREME"
+};
 
 const init = function () {
-    btnSolve.hidden = true;
-    btnRestart.disabled = true;
-    solutionDisplay.hidden = true;
+    setGameMode(GAME_MODES.NEW);
     submission = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -35,25 +43,30 @@ const init = function () {
     ];
     currentPuzzle = [...submission];
 }
-init();
 
-const setGameMode = function () {
-    if (isGameStarted) {
-        solutionDisplay.hidden = true;
-        btnSolve.hidden = false;
-        btnRestart.disabled = false;
-    }
-
-    if (isPuzzleSolved) {
-        solutionDisplay.hidden = false;
-        btnSolve.hidden = true;
-        btnRestart.disabled = true;
-    }
-
-    if (!isValid) {
-        solutionDisplay.hidden = true;
-        btnSolve.hidden = true;
-        btnRestart.disabled = false;
+const setGameMode = function (option) {
+    switch (option) {
+        case GAME_MODES.NEW:
+            btnSolve.hidden = true;
+            btnRestart.disabled = true;
+            solutionDisplay.innerHTML = '';
+            break;
+        case GAME_MODES.START:
+            btnSolve.hidden = false;
+            btnRestart.disabled = true;
+            solutionDisplay.innerHTML = '';
+            break;
+        case GAME_MODES.SOLVE:
+            btnSolve.hidden = true;
+            btnRestart.disabled = true;
+            break;
+        case GAME_MODES.RESTART:
+            btnSolve.hidden = false;
+            btnRestart.disabled = false;
+            solutionDisplay.innerHTML = '';
+            break;
+        default:
+            break;
     }
 }
 
@@ -153,23 +166,22 @@ const checkPuzzle = (e) => {
         input.classList.remove("input-error");
         input.classList.add("sudoku-cell");
         btnSolve.disabled = false;
+        solutionDisplay.innerHTML = '';
     }
     isValid = true;
 };
 
-inputList.forEach(input => input.addEventListener("input", (e) => checkPuzzle(e)));
-
 const startNewGame = async function () {
-    isGameStarted = true;
-    isPuzzleSolved = false;
-    setGameMode();
-    const combination = await fetch(`${SUDOKU_API}/generate?difficulty=${difficultySelect.value}`)
-    const data = await combination.json()
+    setGameMode(GAME_MODES.START);
+
+    const sudokuCombination = await fetch(`${SUDOKU_API}/generate?difficulty=${difficultySelect.value}`)
+    const data = await sudokuCombination.json()
     if (data) {
-        currentPuzzle = [...data];
+        const puzzle = data.newPuzzle;
+        currentPuzzle = [...puzzle];
         for (let i = 0; i < 9; i++) {
             for (let j = 0; j < 9; j++) {
-                inputList[i * 9 + j].value = data[i][j] !== 0 ? data[i][j] : "";
+                inputList[i * 9 + j].value = puzzle[i][j] !== 0 ? puzzle[i][j] : "";
                 inputList[i * 9 + j].classList.remove("input-error");
                 inputList[i * 9 + j].classList.remove("gray-fields");
                 inputList[i * 9 + j].classList.add("sudoku-cell");
@@ -183,6 +195,8 @@ const startNewGame = async function () {
 }
 
 const restartGame = function () {
+    setGameMode(GAME_MODES.RESTART);
+
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
             inputList[i * 9 + j].value = currentPuzzle[i][j] !== 0 ? currentPuzzle[i][j] : "";
@@ -206,7 +220,18 @@ const joinValues = () => {
 }
 
 const setDifficulty = function (difficulty) {
-    return difficulty;
+    switch (difficulty) {
+        case GAME_DIFFICULTIES.EASY:
+            return GAME_DIFFICULTIES.EASY;
+        case GAME_DIFFICULTIES.MEDIUM:
+            return GAME_DIFFICULTIES.MEDIUM;
+        case GAME_DIFFICULTIES.HARD:
+            return GAME_DIFFICULTIES.HARD;
+        case GAME_DIFFICULTIES.EXTREME:
+            return GAME_DIFFICULTIES.EXTREME;
+        default:
+            return GAME_DIFFICULTIES.EASY;
+    }
 }
 
 const inputFillOut = (isSolvable, solution) => {
@@ -216,27 +241,16 @@ const inputFillOut = (isSolvable, solution) => {
                 inputList[i * 9 + j].value = solution[i][j];
                 inputList[i * 9 + j].disabled = true;
                 inputList[i * 9 + j].classList.add("sudoku-cell");
-                inputList[i * 9 + j].classList.add("empty-fields");
                 inputList[i * 9 + j].classList.remove("gray-fields");
             }
         }
-        solutionDisplay.innerHTML = 'This is a solution.'
-    } else {
-        solutionDisplay.innerHTML = 'This is not solvable.'
     }
 }
 
 const solve = async () => {
-    joinValues()
-    isGameStarted = false;
-    isPuzzleSolved = true;
-    setGameMode();
-    if (!isValid) return;
-    const data = {sudokuCombination: submission}
-    if (!data) {
-        isPuzzleSolved = false;
-        inputFillOut(false, null)
-    };
+    joinValues();
+    const bodyRequest = {sudokuCombination: submission}
+    if (!isValid || !bodyRequest) return;
 
     await fetch('http://localhost:5154/api/sudoku/solved', {
         method: 'POST',
@@ -244,22 +258,29 @@ const solve = async () => {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
         },
-        body: JSON.stringify(data.sudokuCombination)
+        body: JSON.stringify(bodyRequest.sudokuCombination)
     })
         .then(response => response.json())
         .then(data => {
-            console.log("Solution data: ", data)
-            inputFillOut(data !== null, data)
+            const {solvable, solution, message} = data;
+            inputFillOut(solvable, solution);
+            if (solvable) {
+                setGameMode(GAME_MODES.SOLVE);
+            } else {
+                setGameMode(GAME_MODES.RESTART);
+            }
+            solutionDisplay.innerHTML = message;
         })
         .catch(error => {
-            isPuzzleSolved = false;
-            inputFillOut(false, null)
             console.error(`Error: ${error}`)
         })
 }
+
+init();
 
 // Event Listeners
 btnSolve.addEventListener('click', solve)
 btnNewGame.addEventListener('click', startNewGame)
 btnRestart.addEventListener('click', restartGame)
 difficultySelect.addEventListener("change", (e) => setDifficulty(e.target.value))
+inputList.forEach(input => input.addEventListener("input", (e) => checkPuzzle(e)));
