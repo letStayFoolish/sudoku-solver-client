@@ -176,8 +176,8 @@ const startNewGame = async function () {
 
     const sudokuCombination = await fetch(`${SUDOKU_API}/generate?difficulty=${difficultySelect.value}`)
     const data = await sudokuCombination.json()
+    const {data: puzzle} = data;
     if (data) {
-        const puzzle = data.newPuzzle;
         currentPuzzle = [...puzzle];
         for (let i = 0; i < 9; i++) {
             for (let j = 0; j < 9; j++) {
@@ -258,11 +258,11 @@ const solve = async () => {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
         },
-        body: JSON.stringify(bodyRequest.sudokuCombination)
+        body: JSON.stringify({puzzleGrid: bodyRequest.sudokuCombination})
     })
         .then(response => response.json())
         .then(data => {
-            const {solvable, solution, message} = data;
+            const {success: solvable, data: solution, message} = data;
             inputFillOut(solvable, solution);
             if (solvable) {
                 setGameMode(GAME_MODES.SOLVE);
